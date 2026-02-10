@@ -2,29 +2,61 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Checksum Game + Leaderboard</title>
+<title>Checksum Tournament Game</title>
 <style>
-body { font-family: Arial; text-align:center; background:#eef2f7; padding:20px;}
-.box { background:white; padding:20px; display:inline-block; border-radius:10px;}
-table { margin:auto; border-collapse:collapse; }
-th, td { border:1px solid #ccc; padding:5px 10px; }
-.data { font-weight:bold; margin:5px; }
+body {
+    font-family: Arial;
+    text-align:center;
+    background:#eef2f7;
+    padding:20px;
+}
+.box {
+    background:white;
+    padding:20px;
+    display:inline-block;
+    border-radius:10px;
+    min-width:360px;
+}
+.data {
+    font-weight:bold;
+    margin:5px;
+}
+#lives {
+    font-size:20px;
+    margin:10px;
+}
+table {
+    margin:auto;
+    border-collapse:collapse;
+    width:60%;
+}
+th, td {
+    border:1px solid #ccc;
+    padding:6px 10px;
+}
+.gold { background:#fff3cd; }
+.silver { background:#e2e3e5; }
+.bronze { background:#f8d7da; }
+button {
+    padding:8px 12px;
+    margin:5px;
+}
 </style>
 </head>
 <body>
 
 <div class="box">
-<h2>🎮 Checksum Game - Level Mode</h2>
+<h2>🎮 Checksum Tournament</h2>
 
 <input type="text" id="nama" placeholder="Masukkan Nama"><br><br>
 
 <div id="level">Level: 1</div>
 <div>Streak: <span id="streak">0</span>/5</div>
-<br>
+<div id="lives">❤️❤️❤️</div>
 
 <div id="dataContainer"></div>
 
-<input type="text" id="jawaban" maxlength="8" placeholder="8 bit"><br><br>
+<input type="text" id="jawaban" maxlength="8" placeholder="Masukkan 8 bit"><br><br>
 <button onclick="cekJawaban()">Cek Jawaban</button>
 
 <p id="hasil"></p>
@@ -42,115 +74,158 @@ const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzMjln3cUZpyKgJHa43o
 let level = 1;
 let streak = 0;
 let skor = 0;
+let nyawa = 3;
 let dataList = [];
 
 function random8Bit(){
-  return Math.floor(Math.random()*256);
+    return Math.floor(Math.random()*256);
 }
 
 function toBinary8(num){
-  return num.toString(2).padStart(8,'0');
+    return num.toString(2).padStart(8,'0');
 }
 
 function hitungChecksum(list){
-  let total = 0;
-  for(let i=0;i<list.length;i++){
-    total += list[i];
-    if(total > 255){
-      total = (total & 255) + 1;
+    let total = 0;
+    for(let i=0;i<list.length;i++){
+        total += list[i];
+        if(total > 255){
+            total = (total & 255) + 1;
+        }
     }
-  }
-  return (~total) & 255;
+    return (~total) & 255;
 }
 
 function getJumlahData(){
-  if(level===1) return 2;
-  if(level===2) return 3;
-  return 4;
+    if(level===1) return 2;
+    if(level===2) return 3;
+    return 4;
+}
+
+function updateLives(){
+    let hearts="";
+    for(let i=0;i<nyawa;i++){
+        hearts+="❤️";
+    }
+    document.getElementById("lives").innerText=hearts;
 }
 
 function soalBaru(){
-  dataList=[];
-  let jumlah=getJumlahData();
-  for(let i=0;i<jumlah;i++){
-    dataList.push(random8Bit());
-  }
-  tampilkanData();
+    dataList=[];
+    let jumlah=getJumlahData();
+    for(let i=0;i<jumlah;i++){
+        dataList.push(random8Bit());
+    }
+    tampilkanData();
 }
 
 function tampilkanData(){
-  let container=document.getElementById("dataContainer");
-  container.innerHTML="";
-  dataList.forEach((d,i)=>{
-    container.innerHTML+=`<div class="data">Data ${i+1}: ${toBinary8(d)}</div>`;
-  });
+    let container=document.getElementById("dataContainer");
+    container.innerHTML="";
+    dataList.forEach((d,i)=>{
+        container.innerHTML+=
+        `<div class="data">Data ${i+1}: ${toBinary8(d)}</div>`;
+    });
 }
 
 function kirimSkor(){
-  let nama=document.getElementById("nama").value;
-  if(!nama) return;
+    let nama=document.getElementById("nama").value;
+    if(!nama) return;
 
-  fetch(SCRIPT_URL,{
-    method:"POST",
-    body:new URLSearchParams({
-      nama:nama,
-      level:level,
-      skor:skor
-    })
-  }).then(()=> loadLeaderboard());
+    fetch(SCRIPT_URL,{
+        method:"POST",
+        body:new URLSearchParams({
+            nama:nama,
+            level:level,
+            skor:skor
+        })
+    }).then(()=> loadLeaderboard());
 }
 
-function cekJawaban(){
-  let input=document.getElementById("jawaban").value;
-  let benar=toBinary8(hitungChecksum(dataList));
-
-  if(input===benar){
-    skor++;
-    streak++;
-    document.getElementById("skor").innerText=skor;
-    document.getElementById("streak").innerText=streak;
-
-    if(streak===5){
-      if(level<3) level++;
-      streak=0;
-      document.getElementById("level").innerText="Level: "+level;
-      document.getElementById("streak").innerText=streak;
-    }
-
-    soalBaru();
-  }else{
-    document.getElementById("hasil").innerText="Game Over!";
-    kirimSkor();
-    skor=0;
+function resetGame(){
     level=1;
     streak=0;
+    skor=0;
+    nyawa=3;
+
     document.getElementById("level").innerText="Level: 1";
     document.getElementById("streak").innerText=0;
     document.getElementById("skor").innerText=0;
+    document.getElementById("hasil").innerText="";
+    updateLives();
     soalBaru();
-  }
+}
 
-  document.getElementById("jawaban").value="";
+function cekJawaban(){
+    let input=document.getElementById("jawaban").value;
+    let benar=toBinary8(hitungChecksum(dataList));
+
+    if(input===benar){
+        skor++;
+        streak++;
+
+        document.getElementById("skor").innerText=skor;
+        document.getElementById("streak").innerText=streak;
+        document.getElementById("hasil").innerText="✅ Benar!";
+
+        if(streak===5){
+            if(level<3){
+                level++;
+                alert("🎉 Naik ke Level "+level+"!");
+            }
+            streak=0;
+            document.getElementById("level").innerText="Level: "+level;
+            document.getElementById("streak").innerText=0;
+        }
+
+        soalBaru();
+
+    }else{
+        nyawa--;
+        streak=0;
+        document.getElementById("streak").innerText=0;
+        updateLives();
+        document.getElementById("hasil").innerText="❌ Salah!";
+
+        if(nyawa===0){
+            document.getElementById("hasil").innerText="💀 Game Over!";
+            kirimSkor();
+            setTimeout(resetGame,1500);
+        }
+    }
+
+    document.getElementById("jawaban").value="";
 }
 
 function loadLeaderboard(){
-  fetch(SCRIPT_URL)
-  .then(res=>res.json())
-  .then(data=>{
-    let table=document.getElementById("leaderboard");
-    table.innerHTML="<tr><th>Rank</th><th>Nama</th><th>Level</th><th>Skor</th></tr>";
-    data.slice(0,10).forEach((item,i)=>{
-      table.innerHTML+=`
-      <tr>
-        <td>${i+1}</td>
-        <td>${item.nama}</td>
-        <td>${item.level}</td>
-        <td>${item.skor}</td>
-      </tr>`;
+    fetch(SCRIPT_URL)
+    .then(res=>res.json())
+    .then(data=>{
+        let table=document.getElementById("leaderboard");
+        table.innerHTML="<tr><th>Rank</th><th>Nama</th><th>Level</th><th>Skor</th></tr>";
+
+        data.slice(0,10).forEach((item,i)=>{
+
+            let medal="";
+            let rowClass="";
+
+            if(i===0){ medal="🥇"; rowClass="gold"; }
+            else if(i===1){ medal="🥈"; rowClass="silver"; }
+            else if(i===2){ medal="🥉"; rowClass="bronze"; }
+            else medal=i+1;
+
+            table.innerHTML+=`
+            <tr class="${rowClass}">
+                <td>${medal}</td>
+                <td>${item.nama}</td>
+                <td>${item.level}</td>
+                <td>${item.skor}</td>
+            </tr>`;
+        });
     });
-  });
 }
 
+updateLives();
 soalBaru();
 loadLeaderboard();
 </script>

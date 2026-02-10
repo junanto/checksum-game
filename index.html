@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Checksum Game + Leaderboard</title>
+<style>
+body { font-family: Arial; text-align:center; background:#eef2f7; padding:20px;}
+.box { background:white; padding:20px; display:inline-block; border-radius:10px;}
+table { margin:auto; border-collapse:collapse; }
+th, td { border:1px solid #ccc; padding:5px 10px; }
+.data { font-weight:bold; margin:5px; }
+</style>
+</head>
+<body>
+
+<div class="box">
+<h2>🎮 Checksum Game - Level Mode</h2>
+
+<input type="text" id="nama" placeholder="Masukkan Nama"><br><br>
+
+<div id="level">Level: 1</div>
+<div>Streak: <span id="streak">0</span>/5</div>
+<br>
+
+<div id="dataContainer"></div>
+
+<input type="text" id="jawaban" maxlength="8" placeholder="8 bit"><br><br>
+<button onclick="cekJawaban()">Cek Jawaban</button>
+
+<p id="hasil"></p>
+<p>Skor: <span id="skor">0</span></p>
+</div>
+
+<h2>🏆 Leaderboard</h2>
+<table id="leaderboard">
+<tr><th>Rank</th><th>Nama</th><th>Level</th><th>Skor</th></tr>
+</table>
+
+<script>
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzMjln3cUZpyKgJHa43okC649067PXgApxRJMz74tv3jyk0OZ52TLq9cQrNQLGsZYhjWw/exec";
+
+let level = 1;
+let streak = 0;
+let skor = 0;
+let dataList = [];
+
+function random8Bit(){
+  return Math.floor(Math.random()*256);
+}
+
+function toBinary8(num){
+  return num.toString(2).padStart(8,'0');
+}
+
+function hitungChecksum(list){
+  let total = 0;
+  for(let i=0;i<list.length;i++){
+    total += list[i];
+    if(total > 255){
+      total = (total & 255) + 1;
+    }
+  }
+  return (~total) & 255;
+}
+
+function getJumlahData(){
+  if(level===1) return 2;
+  if(level===2) return 3;
+  return 4;
+}
+
+function soalBaru(){
+  dataList=[];
+  let jumlah=getJumlahData();
+  for(let i=0;i<jumlah;i++){
+    dataList.push(random8Bit());
+  }
+  tampilkanData();
+}
+
+function tampilkanData(){
+  let container=document.getElementById("dataContainer");
+  container.innerHTML="";
+  dataList.forEach((d,i)=>{
+    container.innerHTML+=`<div class="data">Data ${i+1}: ${toBinary8(d)}</div>`;
+  });
+}
+
+function kirimSkor(){
+  let nama=document.getElementById("nama").value;
+  if(!nama) return;
+
+  fetch(SCRIPT_URL,{
+    method:"POST",
+    body:new URLSearchParams({
+      nama:nama,
+      level:level,
+      skor:skor
+    })
+  }).then(()=> loadLeaderboard());
+}
+
+function cekJawaban(){
+  let input=document.getElementById("jawaban").value;
+  let benar=toBinary8(hitungChecksum(dataList));
+
+  if(input===benar){
+    skor++;
+    streak++;
+    document.getElementById("skor").innerText=skor;
+    document.getElementById("streak").innerText=streak;
+
+    if(streak===5){
+      if(level<3) level++;
+      streak=0;
+      document.getElementById("level").innerText="Level: "+level;
+      document.getElementById("streak").innerText=streak;
+    }
+
+    soalBaru();
+  }else{
+    document.getElementById("hasil").innerText="Game Over!";
+    kirimSkor();
+    skor=0;
+    level=1;
+    streak=0;
+    document.getElementById("level").innerText="Level: 1";
+    document.getElementById("streak").innerText=0;
+    document.getElementById("skor").innerText=0;
+    soalBaru();
+  }
+
+  document.getElementById("jawaban").value="";
+}
+
+function loadLeaderboard(){
+  fetch(SCRIPT_URL)
+  .then(res=>res.json())
+  .then(data=>{
+    let table=document.getElementById("leaderboard");
+    table.innerHTML="<tr><th>Rank</th><th>Nama</th><th>Level</th><th>Skor</th></tr>";
+    data.slice(0,10).forEach((item,i)=>{
+      table.innerHTML+=`
+      <tr>
+        <td>${i+1}</td>
+        <td>${item.nama}</td>
+        <td>${item.level}</td>
+        <td>${item.skor}</td>
+      </tr>`;
+    });
+  });
+}
+
+soalBaru();
+loadLeaderboard();
+</script>
+
+</body>
+</html>

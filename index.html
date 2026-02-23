@@ -161,6 +161,7 @@ function cekJawaban(){
     let benar=toBinary8(hitungChecksum(dataList));
 
     if(input===benar){
+
         skor++;
         streak++;
 
@@ -181,17 +182,28 @@ function cekJawaban(){
         soalBaru();
 
     }else{
+
         nyawa--;
         streak=0;
+
         document.getElementById("streak").innerText=0;
         updateLives();
+
         document.getElementById("hasil").innerText="❌ Salah!";
 
         if(nyawa===0){
+
             document.getElementById("hasil").innerText="💀 Game Over!";
             kirimSkor();
             setTimeout(resetGame,1500);
+
+        }else{
+
+            // ⭐ TAMBAHKAN INI
+            soalBaru();
+
         }
+
     }
 
     document.getElementById("jawaban").value="";

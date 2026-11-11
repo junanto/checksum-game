@@ -1,72 +1,456 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Checksum Tournament Game</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet">
 <style>
-body {
-    font-family: Arial;
-    text-align:center;
-    background:#eef2f7;
-    padding:20px;
-}
-.box {
-    background:white;
-    padding:20px;
-    display:inline-block;
-    border-radius:10px;
-    min-width:360px;
-}
-.data {
-    font-weight:bold;
-    margin:5px;
-}
-#lives {
-    font-size:20px;
-    margin:10px;
-}
-table {
-    margin:auto;
-    border-collapse:collapse;
-    width:60%;
-}
-th, td {
-    border:1px solid #ccc;
-    padding:6px 10px;
-}
-.gold { background:#fff3cd; }
-.silver { background:#e2e3e5; }
-.bronze { background:#f8d7da; }
-button {
-    padding:8px 12px;
-    margin:5px;
-}
+  :root {
+    --primary: #4f46e5;
+    --primary-hover: #4338ca;
+    --bg: #f1f5f9;
+    --card: #ffffff;
+    --text: #1e293b;
+    --muted: #64748b;
+    --border: #e2e8f0;
+    --success: #10b981;
+    --danger: #ef4444;
+  }
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    padding: 24px 16px;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+  }
+
+  .container {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 24px;
+    max-width: 920px;
+    width: 100%;
+  }
+
+  @media (min-width: 768px) {
+    .container {
+      grid-template-columns: 1.2fr 1fr;
+    }
+  }
+
+  .card {
+    background: var(--card);
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--border);
+  }
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+
+  .header h2 {
+    font-size: 1.35rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .btn-help {
+    background: #eef2ff;
+    color: var(--primary);
+    border: none;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+  }
+
+  .btn-help:hover {
+    background: #e0e7ff;
+  }
+
+  /* Panduan Cara Main */
+  .guide-box {
+    background: #f8fafc;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px;
+    margin-bottom: 18px;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    color: #334155;
+    display: none;
+  }
+
+  .guide-box.show {
+    display: block;
+    animation: fadeIn 0.2s ease-in;
+  }
+
+  .guide-box ol {
+    margin-left: 18px;
+    margin-top: 6px;
+  }
+
+  /* Input Nama */
+  .player-input {
+    margin-bottom: 18px;
+  }
+
+  .player-input input {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    font-size: 0.95rem;
+    font-family: inherit;
+    transition: border-color 0.2s;
+  }
+
+  .player-input input:focus {
+    outline: none;
+    border-color: var(--primary);
+  }
+
+  /* Status Bar */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .stat-item {
+    background: #f8fafc;
+    padding: 10px;
+    border-radius: 10px;
+    text-align: center;
+    border: 1px solid var(--border);
+  }
+
+  .stat-label {
+    font-size: 0.75rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+  }
+
+  .stat-value {
+    font-size: 1.1rem;
+    font-weight: 700;
+  }
+
+  /* Streak Progress */
+  .streak-wrapper {
+    margin-bottom: 20px;
+  }
+
+  .streak-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    color: var(--muted);
+    margin-bottom: 6px;
+    font-weight: 600;
+  }
+
+  .progress-bg {
+    background: #e2e8f0;
+    height: 8px;
+    border-radius: 99px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    background: var(--primary);
+    height: 100%;
+    width: 0%;
+    transition: width 0.3s ease;
+  }
+
+  /* Area Soal Biner */
+  .binary-board {
+    background: #0f172a;
+    color: #f8fafc;
+    padding: 18px;
+    border-radius: 12px;
+    margin-bottom: 18px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .binary-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 0;
+    border-bottom: 1px dashed #334155;
+  }
+
+  .binary-row:last-child {
+    border-bottom: none;
+  }
+
+  .data-label {
+    font-size: 0.85rem;
+    color: #94a3b8;
+  }
+
+  .data-bits {
+    font-size: 1.25rem;
+    letter-spacing: 3px;
+    color: #38bdf8;
+    font-weight: 700;
+  }
+
+  /* Tombol Bit Interaktif */
+  .bit-toggles-label {
+    font-size: 0.8rem;
+    color: var(--muted);
+    margin-bottom: 8px;
+    text-align: center;
+  }
+
+  .bit-toggles {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    gap: 6px;
+    margin-bottom: 14px;
+  }
+
+  .bit-btn {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.15rem;
+    font-weight: 700;
+    padding: 10px 0;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    background: #f8fafc;
+    color: var(--text);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .bit-btn.active {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+  }
+
+  /* Input Manual & Submit */
+  .answer-group {
+    display: flex;
+    gap: 10px;
+  }
+
+  .answer-group input {
+    flex: 1;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.15rem;
+    letter-spacing: 3px;
+    text-align: center;
+    padding: 12px;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    font-weight: 700;
+  }
+
+  .answer-group input:focus {
+    outline: none;
+    border-color: var(--primary);
+  }
+
+  .btn-submit {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 0 20px;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .btn-submit:hover {
+    background: var(--primary-hover);
+  }
+
+  /* Feedback Alert */
+  .feedback {
+    margin-top: 14px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-align: center;
+    display: none;
+  }
+
+  .feedback.success {
+    display: block;
+    background: #dcfce7;
+    color: #166534;
+  }
+
+  .feedback.error {
+    display: block;
+    background: #fee2e2;
+    color: #991b1b;
+    animation: shake 0.3s;
+  }
+
+  /* Leaderboard Table */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 8px;
+  }
+
+  th {
+    text-align: left;
+    font-size: 0.8rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    padding: 10px 12px;
+    border-bottom: 2px solid var(--border);
+  }
+
+  td {
+    padding: 12px;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.9rem;
+  }
+
+  tr:last-child td {
+    border-bottom: none;
+  }
+
+  .gold { background: #fef9c3; font-weight: 600; }
+  .silver { background: #f1f5f9; font-weight: 600; }
+  .bronze { background: #ffedd5; font-weight: 600; }
+
+  .badge-lvl {
+    background: #e2e8f0;
+    padding: 2px 8px;
+    border-radius: 99px;
+    font-size: 0.78rem;
+    font-weight: 600;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-6px); }
+    75% { transform: translateX(6px); }
+  }
 </style>
 </head>
 <body>
 
-<div class="box">
-<h2>🎮 Checksum Tournament</h2>
+<div class="container">
+  <!-- PANEL GAME -->
+  <div class="card">
+    <div class="header">
+      <h2>🎮 Checksum Tournament</h2>
+      <button class="btn-help" onclick="toggleGuide()">? Cara Hitung</button>
+    </div>
 
-<input type="text" id="nama" placeholder="Masukkan Nama"><br><br>
+    <div class="guide-box" id="guideBox">
+      <strong>Cara Menghitung 8-Bit Checksum:</strong>
+      <ol>
+        <li>Jumlahkan semua data biner 8-bit yang tampil.</li>
+        <li>Jika hasil penjumlahan menghasilkan <em>carry</em> (lebih dari 8 bit / &gt; 255), tambahkan bit kelebihan tersebut ke bit paling kanan (<em>wrap-around</em>).</li>
+        <li>Balikkan semua bit hasil akhir (<strong>1's Complement</strong>: <code>0</code> jadi <code>1</code>, dan <code>1</code> jadi <code>0</code>).</li>
+      </ol>
+    </div>
 
-<div id="level">Level: 1</div>
-<div>Streak: <span id="streak">0</span>/5</div>
-<div id="lives">❤️❤️❤️</div>
+    <div class="player-input">
+      <input type="text" id="nama" placeholder="Masukkan Nama Pemain (untuk Leaderboard)...">
+    </div>
 
-<div id="dataContainer"></div>
+    <div class="stats-grid">
+      <div class="stat-item">
+        <div class="stat-label">Level</div>
+        <div class="stat-value" id="level">1</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-label">Skor</div>
+        <div class="stat-value" id="skor">0</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-label">Nyawa</div>
+        <div class="stat-value" id="lives">❤️❤️❤️</div>
+      </div>
+    </div>
 
-<input type="text" id="jawaban" maxlength="8" placeholder="Masukkan 8 bit"><br><br>
-<button onclick="cekJawaban()">Cek Jawaban</button>
+    <div class="streak-wrapper">
+      <div class="streak-header">
+        <span>Streak Naik Level</span>
+        <span><span id="streak">0</span> / 5</span>
+      </div>
+      <div class="progress-bg">
+        <div class="progress-fill" id="streakBar"></div>
+      </div>
+    </div>
 
-<p id="hasil"></p>
-<p>Skor: <span id="skor">0</span></p>
+    <div class="binary-board" id="dataContainer"></div>
+
+    <div class="bit-toggles-label">Klik kotak bit di bawah atau ketik langsung 8-bit jawaban:</div>
+    <div class="bit-toggles" id="bitToggles"></div>
+
+    <div class="answer-group">
+      <input type="text" id="jawaban" maxlength="8" value="00000000" placeholder="00000000" oninput="syncFromInput()">
+      <button class="btn-submit" onclick="cekJawaban()">Cek Jawaban</button>
+    </div>
+
+    <div id="hasil" class="feedback"></div>
+  </div>
+
+  <!-- PANEL LEADERBOARD -->
+  <div class="card">
+    <div class="header">
+      <h2>🏆 Top 10 Leaderboard</h2>
+      <button class="btn-help" onclick="loadLeaderboard()">↻ Refresh</button>
+    </div>
+    <table id="leaderboard">
+      <thead>
+        <tr>
+          <th>Rank</th>
+          <th>Nama</th>
+          <th>Level</th>
+          <th>Skor</th>
+        </tr>
+      </thead>
+      <tbody id="leaderboardBody">
+        <tr><td colspan="4" style="text-align:center; color:#64748b;">Memuat data...</td></tr>
+      </tbody>
+    </table>
+  </div>
 </div>
-
-<h2>🏆 Leaderboard</h2>
-<table id="leaderboard">
-<tr><th>Rank</th><th>Nama</th><th>Level</th><th>Skor</th></tr>
-</table>
 
 <script>
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzMjln3cUZpyKgJHa43okC649067PXgApxRJMz74tv3jyk0OZ52TLq9cQrNQLGsZYhjWw/exec";
@@ -76,168 +460,228 @@ let streak = 0;
 let skor = 0;
 let nyawa = 3;
 let dataList = [];
+let bitArray = [0, 0, 0, 0, 0, 0, 0, 0];
 
-function random8Bit(){
-    return Math.floor(Math.random()*256);
+function toggleGuide() {
+  document.getElementById("guideBox").classList.toggle("show");
 }
 
-function toBinary8(num){
-    return num.toString(2).padStart(8,'0');
+function random8Bit() {
+  return Math.floor(Math.random() * 256);
 }
 
-function hitungChecksum(list){
-    let total = 0;
-    for(let i=0;i<list.length;i++){
-        total += list[i];
-        if(total > 255){
-            total = (total & 255) + 1;
-        }
+function toBinary8(num) {
+  return num.toString(2).padStart(8, '0');
+}
+
+function hitungChecksum(list) {
+  let total = 0;
+  for (let i = 0; i < list.length; i++) {
+    total += list[i];
+    if (total > 255) {
+      total = (total & 255) + 1;
     }
-    return (~total) & 255;
+  }
+  return (~total) & 255;
 }
 
-function getJumlahData(){
-    if(level===1) return 2;
-    if(level===2) return 3;
-    return 4;
+function getJumlahData() {
+  if (level === 1) return 2;
+  if (level === 2) return 3;
+  return 4;
 }
 
-function updateLives(){
-    let hearts="";
-    for(let i=0;i<nyawa;i++){
-        hearts+="❤️";
+function updateLives() {
+  let hearts = "";
+  for (let i = 0; i < 3; i++) {
+    hearts += i < nyawa ? "❤️" : "🖤";
+  }
+  document.getElementById("lives").innerText = hearts;
+}
+
+function updateStreakUI() {
+  document.getElementById("streak").innerText = streak;
+  document.getElementById("streakBar").style.width = `${(streak / 5) * 100}%`;
+}
+
+// Render 8 tombol bit interaktif
+function renderBitToggles() {
+  const container = document.getElementById("bitToggles");
+  container.innerHTML = "";
+  bitArray.forEach((bit, index) => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = `bit-btn ${bit === 1 ? "active" : ""}`;
+    btn.innerText = bit;
+    btn.onclick = () => {
+      bitArray[index] = bitArray[index] === 0 ? 1 : 0;
+      document.getElementById("jawaban").value = bitArray.join("");
+      renderBitToggles();
+    };
+    container.appendChild(btn);
+  });
+}
+
+function syncFromInput() {
+  const inputEl = document.getElementById("jawaban");
+  // Hanya izinkan karakter 0 dan 1
+  const cleanVal = inputEl.value.replace(/[^01]/g, "");
+  inputEl.value = cleanVal;
+
+  const padded = cleanVal.padEnd(8, "0");
+  bitArray = padded.split("").map(Number);
+  renderBitToggles();
+}
+
+function resetInputBits() {
+  bitArray = [0, 0, 0, 0, 0, 0, 0, 0];
+  document.getElementById("jawaban").value = "00000000";
+  renderBitToggles();
+}
+
+function soalBaru() {
+  dataList = [];
+  let jumlah = getJumlahData();
+  for (let i = 0; i < jumlah; i++) {
+    dataList.push(random8Bit());
+  }
+  tampilkanData();
+  resetInputBits();
+}
+
+function tampilkanData() {
+  let container = document.getElementById("dataContainer");
+  container.innerHTML = "";
+  dataList.forEach((d, i) => {
+    container.innerHTML += `
+      <div class="binary-row">
+        <span class="data-label">Data ${i + 1} (${d})</span>
+        <span class="data-bits">${toBinary8(d)}</span>
+      </div>`;
+  });
+}
+
+function showFeedback(message, type) {
+  const el = document.getElementById("hasil");
+  el.innerText = message;
+  el.className = `feedback ${type}`;
+}
+
+function kirimSkor() {
+  let nama = document.getElementById("nama").value.trim();
+  if (!nama) return;
+
+  fetch(SCRIPT_URL, {
+    method: "POST",
+    body: new URLSearchParams({
+      nama: nama,
+      level: level,
+      skor: skor
+    })
+  }).then(() => loadLeaderboard());
+}
+
+function resetGame() {
+  level = 1;
+  streak = 0;
+  skor = 0;
+  nyawa = 3;
+
+  document.getElementById("level").innerText = "1";
+  document.getElementById("skor").innerText = "0";
+  document.getElementById("hasil").className = "feedback";
+  updateStreakUI();
+  updateLives();
+  soalBaru();
+}
+
+function cekJawaban() {
+  let input = document.getElementById("jawaban").value;
+  if (input.length !== 8) {
+    showFeedback("⚠️ Masukkan tepat 8 bit (0 atau 1)!", "error");
+    return;
+  }
+
+  let benar = toBinary8(hitungChecksum(dataList));
+
+  if (input === benar) {
+    skor++;
+    streak++;
+
+    document.getElementById("skor").innerText = skor;
+    showFeedback("✅ Tepat sekali! Checksum benar.", "success");
+
+    if (streak === 5) {
+      if (level < 3) {
+        level++;
+        showFeedback(`🎉 Luar biasa! Naik ke Level ${level}!`, "success");
+      }
+      streak = 0;
+      document.getElementById("level").innerText = level;
     }
-    document.getElementById("lives").innerText=hearts;
-}
 
-function soalBaru(){
-    dataList=[];
-    let jumlah=getJumlahData();
-    for(let i=0;i<jumlah;i++){
-        dataList.push(random8Bit());
-    }
-    tampilkanData();
-}
-
-function tampilkanData(){
-    let container=document.getElementById("dataContainer");
-    container.innerHTML="";
-    dataList.forEach((d,i)=>{
-        container.innerHTML+=
-        `<div class="data">Data ${i+1}: ${toBinary8(d)}</div>`;
-    });
-}
-
-function kirimSkor(){
-    let nama=document.getElementById("nama").value;
-    if(!nama) return;
-
-    fetch(SCRIPT_URL,{
-        method:"POST",
-        body:new URLSearchParams({
-            nama:nama,
-            level:level,
-            skor:skor
-        })
-    }).then(()=> loadLeaderboard());
-}
-
-function resetGame(){
-    level=1;
-    streak=0;
-    skor=0;
-    nyawa=3;
-
-    document.getElementById("level").innerText="Level: 1";
-    document.getElementById("streak").innerText=0;
-    document.getElementById("skor").innerText=0;
-    document.getElementById("hasil").innerText="";
-    updateLives();
+    updateStreakUI();
     soalBaru();
-}
+  } else {
+    nyawa--;
+    streak = 0;
+    updateStreakUI();
+    updateLives();
 
-function cekJawaban(){
-    let input=document.getElementById("jawaban").value;
-    let benar=toBinary8(hitungChecksum(dataList));
-
-    if(input===benar){
-
-        skor++;
-        streak++;
-
-        document.getElementById("skor").innerText=skor;
-        document.getElementById("streak").innerText=streak;
-        document.getElementById("hasil").innerText="✅ Benar!";
-
-        if(streak===5){
-            if(level<3){
-                level++;
-                alert("🎉 Naik ke Level "+level+"!");
-            }
-            streak=0;
-            document.getElementById("level").innerText="Level: "+level;
-            document.getElementById("streak").innerText=0;
-        }
-
-        soalBaru();
-
-    }else{
-
-        nyawa--;
-        streak=0;
-
-        document.getElementById("streak").innerText=0;
-        updateLives();
-
-        document.getElementById("hasil").innerText="❌ Salah!";
-
-        if(nyawa===0){
-
-            document.getElementById("hasil").innerText="💀 Game Over!";
-            kirimSkor();
-            setTimeout(resetGame,1500);
-
-        }else{
-
-            // ⭐ TAMBAHKAN INI
-            soalBaru();
-
-        }
-
+    if (nyawa === 0) {
+      showFeedback(`💀 Game Over! Jawaban yang benar: ${benar}`, "error");
+      kirimSkor();
+      setTimeout(resetGame, 2200);
+    } else {
+      showFeedback(`❌ Salah! Jawaban yang benar adalah ${benar}`, "error");
+      soalBaru();
     }
-
-    document.getElementById("jawaban").value="";
+  }
 }
 
-function loadLeaderboard(){
-    fetch(SCRIPT_URL)
-    .then(res=>res.json())
-    .then(data=>{
-        let table=document.getElementById("leaderboard");
-        table.innerHTML="<tr><th>Rank</th><th>Nama</th><th>Level</th><th>Skor</th></tr>";
+// Mendukung tombol Enter pada input jawaban
+document.getElementById("jawaban").addEventListener("keypress", function(e) {
+  if (e.key === "Enter") {
+    cekJawaban();
+  }
+});
 
-        data.slice(0,10).forEach((item,i)=>{
+function loadLeaderboard() {
+  const tbody = document.getElementById("leaderboardBody");
+  fetch(SCRIPT_URL)
+    .then(res => res.json())
+    .then(data => {
+      tbody.innerHTML = "";
+      if (!data || data.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#64748b;">Belum ada skor tercatat.</td></tr>`;
+        return;
+      }
 
-            let medal="";
-            let rowClass="";
+      data.slice(0, 10).forEach((item, i) => {
+        let medal = i + 1;
+        let rowClass = "";
 
-            if(i===0){ medal="🥇"; rowClass="gold"; }
-            else if(i===1){ medal="🥈"; rowClass="silver"; }
-            else if(i===2){ medal="🥉"; rowClass="bronze"; }
-            else medal=i+1;
+        if (i === 0) { medal = "🥇"; rowClass = "gold"; }
+        else if (i === 1) { medal = "🥈"; rowClass = "silver"; }
+        else if (i === 2) { medal = "🥉"; rowClass = "bronze"; }
 
-            table.innerHTML+=`
-            <tr class="${rowClass}">
-                <td>${medal}</td>
-                <td>${item.nama}</td>
-                <td>${item.level}</td>
-                <td>${item.skor}</td>
-            </tr>`;
-        });
+        tbody.innerHTML += `
+          <tr class="${rowClass}">
+            <td>${medal}</td>
+            <td>${item.nama}</td>
+            <td><span class="badge-lvl">Lv ${item.level}</span></td>
+            <td><strong>${item.skor}</strong></td>
+          </tr>`;
+      });
+    })
+    .catch(() => {
+      tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#ef4444;">Gagal memuat leaderboard.</td></tr>`;
     });
 }
 
+// Inisialisasi awal
 updateLives();
+updateStreakUI();
 soalBaru();
 loadLeaderboard();
 </script>

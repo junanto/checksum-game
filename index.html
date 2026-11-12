@@ -3,19 +3,21 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Checksum Tournament Game</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet">
+<title>CHECKSUM BREACH // Hacking Terminal</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700;800&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
   :root {
-    --primary: #4f46e5;
-    --primary-hover: #4338ca;
-    --bg: #f1f5f9;
-    --card: #ffffff;
-    --text: #1e293b;
-    --muted: #64748b;
-    --border: #e2e8f0;
-    --success: #10b981;
-    --danger: #ef4444;
+    --neon-green: #00ff41;
+    --neon-green-dim: rgba(0, 255, 65, 0.15);
+    --neon-green-glow: rgba(0, 255, 65, 0.45);
+    --cyan-accent: #00f3ff;
+    --bg-dark: #030704;
+    --panel-bg: #08110b;
+    --border-color: #163b22;
+    --text-main: #d1fae5;
+    --text-muted: #4d7c5f;
+    --danger: #ff2a55;
+    --warning: #facc15;
   }
 
   * {
@@ -25,79 +27,135 @@
   }
 
   body {
-    font-family: 'Inter', sans-serif;
-    background: var(--bg);
-    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    background-color: var(--bg-dark);
+    color: var(--text-main);
     padding: 24px 16px;
     min-height: 100vh;
     display: flex;
     justify-content: center;
     align-items: flex-start;
+    background-image: 
+      linear-gradient(rgba(0, 255, 65, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0, 255, 65, 0.03) 1px, transparent 1px);
+    background-size: 24px 24px;
+    position: relative;
+  }
+
+  /* Efek Garis Scanline CRT */
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      rgba(0, 0, 0, 0.18),
+      rgba(0, 0, 0, 0.18) 1px,
+      transparent 1px,
+      transparent 2px
+    );
+    pointer-events: none;
+    z-index: 999;
   }
 
   .container {
     display: grid;
     grid-template-columns: 1fr;
     gap: 24px;
-    max-width: 920px;
+    max-width: 960px;
     width: 100%;
+    z-index: 1;
   }
 
   @media (min-width: 768px) {
     .container {
-      grid-template-columns: 1.2fr 1fr;
+      grid-template-columns: 1.25fr 1fr;
     }
   }
 
   .card {
-    background: var(--card);
-    border-radius: 16px;
+    background: var(--panel-bg);
+    border-radius: 8px;
     padding: 24px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-    border: 1px solid var(--border);
+    border: 1px solid var(--border-color);
+    box-shadow: 0 0 25px rgba(0, 255, 65, 0.07), inset 0 0 15px rgba(0, 255, 65, 0.03);
+    position: relative;
+  }
+
+  /* Sudut siku ala HUD Hacker */
+  .card::before {
+    content: "";
+    position: absolute;
+    top: -1px;
+    left: -1px;
+    width: 14px;
+    height: 14px;
+    border-top: 2px solid var(--neon-green);
+    border-left: 2px solid var(--neon-green);
+  }
+
+  .card::after {
+    content: "";
+    position: absolute;
+    bottom: -1px;
+    right: -1px;
+    width: 14px;
+    height: 14px;
+    border-bottom: 2px solid var(--neon-green);
+    border-right: 2px solid var(--neon-green);
   }
 
   .header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 16px;
+    margin-bottom: 18px;
+    padding-bottom: 12px;
+    border-bottom: 1px dashed var(--border-color);
   }
 
   .header h2 {
+    font-family: 'Share Tech Mono', monospace;
     font-size: 1.35rem;
     font-weight: 700;
+    color: var(--neon-green);
+    text-shadow: 0 0 8px var(--neon-green-glow);
+    letter-spacing: 1px;
     display: flex;
     align-items: center;
     gap: 8px;
   }
 
   .btn-help {
-    background: #eef2ff;
-    color: var(--primary);
-    border: none;
+    background: var(--neon-green-dim);
+    color: var(--neon-green);
+    border: 1px solid var(--neon-green);
     padding: 6px 12px;
-    border-radius: 8px;
-    font-size: 0.85rem;
-    font-weight: 600;
+    border-radius: 4px;
+    font-family: inherit;
+    font-size: 0.78rem;
+    font-weight: 700;
     cursor: pointer;
-    transition: 0.2s;
+    text-transform: uppercase;
+    transition: all 0.2s;
   }
 
   .btn-help:hover {
-    background: #e0e7ff;
+    background: var(--neon-green);
+    color: var(--bg-dark);
+    box-shadow: 0 0 12px var(--neon-green-glow);
   }
 
-  /* Panduan Cara Main */
+  /* Panduan Dekripsi */
   .guide-box {
-    background: #f8fafc;
-    border: 1px solid var(--border);
-    border-radius: 10px;
+    background: #040a06;
+    border: 1px solid var(--neon-green);
+    border-radius: 4px;
     padding: 14px;
     margin-bottom: 18px;
-    font-size: 0.85rem;
-    line-height: 1.5;
-    color: #334155;
+    font-size: 0.82rem;
+    line-height: 1.55;
+    color: #a7f3d0;
     display: none;
   }
 
@@ -106,32 +164,63 @@
     animation: fadeIn 0.2s ease-in;
   }
 
+  .guide-box strong {
+    color: var(--neon-green);
+  }
+
   .guide-box ol {
     margin-left: 18px;
     margin-top: 6px;
   }
 
-  /* Input Nama */
+  .guide-box code {
+    background: var(--neon-green-dim);
+    color: var(--neon-green);
+    padding: 1px 5px;
+    border-radius: 3px;
+  }
+
+  /* Input Alias Hacker */
   .player-input {
     margin-bottom: 18px;
+    position: relative;
+  }
+
+  .player-input::before {
+    content: "root@kali:~#";
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--neon-green);
+    font-size: 0.85rem;
+    font-weight: 700;
+    pointer-events: none;
   }
 
   .player-input input {
     width: 100%;
-    padding: 10px 14px;
-    border: 1.5px solid var(--border);
-    border-radius: 10px;
-    font-size: 0.95rem;
+    padding: 11px 14px 11px 122px;
+    background: #030704;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    color: var(--neon-green);
+    font-size: 0.9rem;
     font-family: inherit;
-    transition: border-color 0.2s;
+    transition: all 0.2s;
+  }
+
+  .player-input input::placeholder {
+    color: var(--text-muted);
   }
 
   .player-input input:focus {
     outline: none;
-    border-color: var(--primary);
+    border-color: var(--neon-green);
+    box-shadow: 0 0 12px rgba(0, 255, 65, 0.2);
   }
 
-  /* Status Bar */
+  /* Status Grid */
   .stats-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -140,27 +229,50 @@
   }
 
   .stat-item {
-    background: #f8fafc;
-    padding: 10px;
-    border-radius: 10px;
+    background: #040a06;
+    padding: 10px 8px;
+    border-radius: 4px;
     text-align: center;
-    border: 1px solid var(--border);
+    border: 1px solid var(--border-color);
   }
 
   .stat-label {
-    font-size: 0.75rem;
-    color: var(--muted);
+    font-size: 0.7rem;
+    color: var(--text-muted);
     text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-bottom: 4px;
+    letter-spacing: 1px;
+    margin-bottom: 6px;
   }
 
   .stat-value {
-    font-size: 1.1rem;
-    font-weight: 700;
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: var(--neon-green);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    min-height: 26px;
   }
 
-  /* Streak Progress */
+  /* Ikon Kunci SVG */
+  .key-icon {
+    width: 20px;
+    height: 20px;
+    transition: all 0.3s ease;
+  }
+
+  .key-active {
+    color: var(--neon-green);
+    filter: drop-shadow(0 0 5px var(--neon-green-glow));
+  }
+
+  .key-broken {
+    color: #1e293b;
+    opacity: 0.4;
+  }
+
+  /* Firewall Bypass Progress */
   .streak-wrapper {
     margin-bottom: 20px;
   }
@@ -168,64 +280,84 @@
   .streak-header {
     display: flex;
     justify-content: space-between;
-    font-size: 0.8rem;
-    color: var(--muted);
+    font-size: 0.78rem;
+    color: var(--text-muted);
     margin-bottom: 6px;
-    font-weight: 600;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  .streak-header span:last-child {
+    color: var(--neon-green);
   }
 
   .progress-bg {
-    background: #e2e8f0;
-    height: 8px;
-    border-radius: 99px;
+    background: #030704;
+    border: 1px solid var(--border-color);
+    height: 10px;
+    border-radius: 2px;
     overflow: hidden;
+    padding: 1px;
   }
 
   .progress-fill {
-    background: var(--primary);
+    background: var(--neon-green);
+    box-shadow: 0 0 10px var(--neon-green);
     height: 100%;
     width: 0%;
     transition: width 0.3s ease;
   }
 
-  /* Area Soal Biner */
+  /* Terminal Packet Data (Data 1 & Data 2 Hijau Terang) */
   .binary-board {
-    background: #0f172a;
-    color: #f8fafc;
-    padding: 18px;
-    border-radius: 12px;
+    background: #020503;
+    padding: 16px;
+    border-radius: 4px;
+    border: 1px solid var(--neon-green);
+    box-shadow: inset 0 0 18px rgba(0, 255, 65, 0.08);
     margin-bottom: 18px;
-    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .board-tag {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
   }
 
   .binary-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 6px 0;
-    border-bottom: 1px dashed #334155;
+    padding: 8px 0;
+    border-bottom: 1px dashed var(--border-color);
   }
 
   .binary-row:last-child {
     border-bottom: none;
   }
 
+  /* Data 1 & Data 2 warna hijau terang */
   .data-label {
-    font-size: 0.85rem;
-    color: #94a3b8;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #00ff41;
+    text-shadow: 0 0 6px rgba(0, 255, 65, 0.5);
   }
 
   .data-bits {
-    font-size: 1.25rem;
+    font-size: 1.3rem;
     letter-spacing: 3px;
-    color: #38bdf8;
-    font-weight: 700;
+    color: #00ff41;
+    font-weight: 800;
+    text-shadow: 0 0 8px rgba(0, 255, 65, 0.6);
   }
 
   /* Tombol Bit Interaktif */
   .bit-toggles-label {
-    font-size: 0.8rem;
-    color: var(--muted);
+    font-size: 0.78rem;
+    color: var(--text-muted);
     margin-bottom: 8px;
     text-align: center;
   }
@@ -238,25 +370,31 @@
   }
 
   .bit-btn {
-    font-family: 'JetBrains Mono', monospace;
+    font-family: inherit;
     font-size: 1.15rem;
-    font-weight: 700;
+    font-weight: 800;
     padding: 10px 0;
-    border: 1.5px solid var(--border);
-    border-radius: 8px;
-    background: #f8fafc;
-    color: var(--text);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    background: #040a06;
+    color: var(--text-muted);
     cursor: pointer;
     transition: all 0.15s;
   }
 
-  .bit-btn.active {
-    background: var(--primary);
-    color: white;
-    border-color: var(--primary);
+  .bit-btn:hover {
+    border-color: var(--neon-green);
   }
 
-  /* Input Manual & Submit */
+  .bit-btn.active {
+    background: var(--neon-green-dim);
+    color: var(--neon-green);
+    border-color: var(--neon-green);
+    box-shadow: 0 0 10px rgba(0, 255, 65, 0.25);
+    text-shadow: 0 0 6px var(--neon-green);
+  }
+
+  /* Input Manual & Tombol UNLOCK */
   .answer-group {
     display: flex;
     gap: 10px;
@@ -264,58 +402,77 @@
 
   .answer-group input {
     flex: 1;
-    font-family: 'JetBrains Mono', monospace;
+    font-family: inherit;
     font-size: 1.15rem;
     letter-spacing: 3px;
     text-align: center;
     padding: 12px;
-    border: 1.5px solid var(--border);
-    border-radius: 10px;
-    font-weight: 700;
+    background: #030704;
+    color: var(--neon-green);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    font-weight: 800;
   }
 
   .answer-group input:focus {
     outline: none;
-    border-color: var(--primary);
+    border-color: var(--neon-green);
+    box-shadow: 0 0 12px rgba(0, 255, 65, 0.25);
   }
 
-  .btn-submit {
-    background: var(--primary);
-    color: white;
+  .btn-unlock {
+    background: var(--neon-green);
+    color: #020503;
     border: none;
-    padding: 0 20px;
-    border-radius: 10px;
+    padding: 0 22px;
+    border-radius: 4px;
+    font-family: inherit;
     font-size: 0.95rem;
-    font-weight: 600;
+    font-weight: 800;
+    letter-spacing: 1px;
     cursor: pointer;
-    transition: background 0.2s;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 0 15px var(--neon-green-glow);
+    transition: all 0.2s;
   }
 
-  .btn-submit:hover {
-    background: var(--primary-hover);
+  .btn-unlock:hover {
+    background: #39ff6a;
+    box-shadow: 0 0 22px var(--neon-green);
+    transform: translateY(-1px);
+  }
+
+  .btn-unlock:active {
+    transform: translateY(1px);
   }
 
   /* Feedback Alert */
   .feedback {
     margin-top: 14px;
-    padding: 10px 14px;
-    border-radius: 8px;
-    font-size: 0.9rem;
-    font-weight: 600;
+    padding: 11px 14px;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    font-weight: 700;
     text-align: center;
     display: none;
   }
 
   .feedback.success {
     display: block;
-    background: #dcfce7;
-    color: #166534;
+    background: rgba(0, 255, 65, 0.12);
+    border: 1px solid var(--neon-green);
+    color: var(--neon-green);
+    text-shadow: 0 0 6px rgba(0, 255, 65, 0.4);
   }
 
   .feedback.error {
     display: block;
-    background: #fee2e2;
-    color: #991b1b;
+    background: rgba(255, 42, 85, 0.15);
+    border: 1px solid var(--danger);
+    color: var(--danger);
     animation: shake 0.3s;
   }
 
@@ -323,38 +480,56 @@
   table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 8px;
+    margin-top: 4px;
   }
 
   th {
     text-align: left;
-    font-size: 0.8rem;
-    color: var(--muted);
+    font-size: 0.75rem;
+    color: var(--text-muted);
     text-transform: uppercase;
-    padding: 10px 12px;
-    border-bottom: 2px solid var(--border);
+    padding: 10px 10px;
+    border-bottom: 1px solid var(--border-color);
+    letter-spacing: 1px;
   }
 
   td {
-    padding: 12px;
-    border-bottom: 1px solid var(--border);
-    font-size: 0.9rem;
+    padding: 11px 10px;
+    border-bottom: 1px dashed var(--border-color);
+    font-size: 0.85rem;
+    color: var(--text-main);
   }
 
   tr:last-child td {
     border-bottom: none;
   }
 
-  .gold { background: #fef9c3; font-weight: 600; }
-  .silver { background: #f1f5f9; font-weight: 600; }
-  .bronze { background: #ffedd5; font-weight: 600; }
+  .gold td {
+    color: #fde047;
+    background: rgba(250, 204, 21, 0.08);
+    font-weight: 700;
+  }
+
+  .silver td {
+    color: #e2e8f0;
+    background: rgba(226, 232, 240, 0.06);
+    font-weight: 700;
+  }
+
+  .bronze td {
+    color: #fdba74;
+    background: rgba(251, 146, 60, 0.06);
+    font-weight: 700;
+  }
 
   .badge-lvl {
-    background: #e2e8f0;
+    background: var(--neon-green-dim);
+    color: var(--neon-green);
+    border: 1px solid rgba(0, 255, 65, 0.35);
     padding: 2px 8px;
-    border-radius: 99px;
-    font-size: 0.78rem;
-    font-weight: 600;
+    border-radius: 3px;
+    font-size: 0.75rem;
+    font-weight: 700;
   }
 
   @keyframes fadeIn {
@@ -372,44 +547,44 @@
 <body>
 
 <div class="container">
-  <!-- PANEL GAME -->
+  <!-- PANEL TERMINAL HACKING -->
   <div class="card">
     <div class="header">
-      <h2>🎮 Checksum Tournament</h2>
-      <button class="btn-help" onclick="toggleGuide()">? Cara Hitung</button>
+      <h2>&gt;_ CHECKSUM_BREACH</h2>
+      <button class="btn-help" onclick="toggleGuide()">[? DECRYPT_GUIDE]</button>
     </div>
 
     <div class="guide-box" id="guideBox">
-      <strong>Cara Menghitung 8-Bit Checksum:</strong>
+      <strong>// PROTOKOL DEKRIPSI 8-BIT CHECKSUM:</strong>
       <ol>
-        <li>Jumlahkan semua data biner 8-bit yang tampil.</li>
-        <li>Jika hasil penjumlahan menghasilkan <em>carry</em> (lebih dari 8 bit / &gt; 255), tambahkan bit kelebihan tersebut ke bit paling kanan (<em>wrap-around</em>).</li>
-        <li>Balikkan semua bit hasil akhir (<strong>1's Complement</strong>: <code>0</code> jadi <code>1</code>, dan <code>1</code> jadi <code>0</code>).</li>
+        <li>Jumlahkan semua paket data biner 8-bit yang terdeteksi.</li>
+        <li>Jika terjadi <em>overflow / carry</em> (&gt; 255), tambahkan bit kelebihan tersebut ke bit paling kanan (<em>wrap-around</em>).</li>
+        <li>Lakukan operasi <strong>1's Complement</strong> (balikkan bit: <code>0</code> &rarr; <code>1</code>, <code>1</code> &rarr; <code>0</code>) untuk membuka kunci sistem.</li>
       </ol>
     </div>
 
     <div class="player-input">
-      <input type="text" id="nama" placeholder="Masukkan Nama Pemain (untuk Leaderboard)...">
+      <input type="text" id="nama" placeholder="masukkan_codename_hacker...">
     </div>
 
     <div class="stats-grid">
       <div class="stat-item">
-        <div class="stat-label">Level</div>
-        <div class="stat-value" id="level">1</div>
+        <div class="stat-label">SEC_LEVEL</div>
+        <div class="stat-value" id="level">LVL_1</div>
       </div>
       <div class="stat-item">
-        <div class="stat-label">Skor</div>
+        <div class="stat-label">DATA_MINED</div>
         <div class="stat-value" id="skor">0</div>
       </div>
       <div class="stat-item">
-        <div class="stat-label">Nyawa</div>
-        <div class="stat-value" id="lives">❤️❤️❤️</div>
+        <div class="stat-label">ACCESS_KEYS</div>
+        <div class="stat-value" id="lives"></div>
       </div>
     </div>
 
     <div class="streak-wrapper">
       <div class="streak-header">
-        <span>Streak Naik Level</span>
+        <span>FIREWALL BYPASS PROGRESS</span>
         <span><span id="streak">0</span> / 5</span>
       </div>
       <div class="progress-bg">
@@ -417,36 +592,39 @@
       </div>
     </div>
 
-    <div class="binary-board" id="dataContainer"></div>
+    <div class="binary-board">
+      <div class="board-tag">// INTERCEPTED_PACKETS (8-BIT STREAM)</div>
+      <div id="dataContainer"></div>
+    </div>
 
-    <div class="bit-toggles-label">Klik kotak bit di bawah atau ketik langsung 8-bit jawaban:</div>
+    <div class="bit-toggles-label">[ TOGGLE BIT PAYLOAD ATAU KETIK KODE BINER 8-BIT ]</div>
     <div class="bit-toggles" id="bitToggles"></div>
 
     <div class="answer-group">
       <input type="text" id="jawaban" maxlength="8" value="00000000" placeholder="00000000" oninput="syncFromInput()">
-      <button class="btn-submit" onclick="cekJawaban()">Cek Jawaban</button>
+      <button class="btn-unlock" onclick="cekJawaban()">🔓 UNLOCK</button>
     </div>
 
     <div id="hasil" class="feedback"></div>
   </div>
 
-  <!-- PANEL LEADERBOARD -->
+  <!-- PANEL TOP HACKERS LEADERBOARD -->
   <div class="card">
     <div class="header">
-      <h2>🏆 Top 10 Leaderboard</h2>
-      <button class="btn-help" onclick="loadLeaderboard()">↻ Refresh</button>
+      <h2>🏆 TOP_HACKERS</h2>
+      <button class="btn-help" onclick="loadLeaderboard()">↻ SYNC</button>
     </div>
     <table id="leaderboard">
       <thead>
         <tr>
-          <th>Rank</th>
-          <th>Nama</th>
-          <th>Level</th>
-          <th>Skor</th>
+          <th>#</th>
+          <th>CODENAME</th>
+          <th>LVL</th>
+          <th>SCORE</th>
         </tr>
       </thead>
       <tbody id="leaderboardBody">
-        <tr><td colspan="4" style="text-align:center; color:#64748b;">Memuat data...</td></tr>
+        <tr><td colspan="4" style="text-align:center; color:#4d7c5f;">Establishing connection...</td></tr>
       </tbody>
     </table>
   </div>
@@ -461,6 +639,18 @@ let skor = 0;
 let nyawa = 3;
 let dataList = [];
 let bitArray = [0, 0, 0, 0, 0, 0, 0, 0];
+
+// SVG Gambar Kunci untuk indikator nyawa
+const KEY_SVG_ACTIVE = `
+<svg class="key-icon key-active" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" title="Access Key Aktif">
+  <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path>
+</svg>`;
+
+const KEY_SVG_BROKEN = `
+<svg class="key-icon key-broken" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" title="Access Key Rusak">
+  <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path>
+  <line x1="2" y1="2" x2="22" y2="22" stroke="#ff2a55" stroke-width="2.2"></line>
+</svg>`;
 
 function toggleGuide() {
   document.getElementById("guideBox").classList.toggle("show");
@@ -492,11 +682,11 @@ function getJumlahData() {
 }
 
 function updateLives() {
-  let hearts = "";
+  let keysHTML = "";
   for (let i = 0; i < 3; i++) {
-    hearts += i < nyawa ? "❤️" : "🖤";
+    keysHTML += i < nyawa ? KEY_SVG_ACTIVE : KEY_SVG_BROKEN;
   }
-  document.getElementById("lives").innerText = hearts;
+  document.getElementById("lives").innerHTML = keysHTML;
 }
 
 function updateStreakUI() {
@@ -524,7 +714,6 @@ function renderBitToggles() {
 
 function syncFromInput() {
   const inputEl = document.getElementById("jawaban");
-  // Hanya izinkan karakter 0 dan 1
   const cleanVal = inputEl.value.replace(/[^01]/g, "");
   inputEl.value = cleanVal;
 
@@ -555,7 +744,7 @@ function tampilkanData() {
   dataList.forEach((d, i) => {
     container.innerHTML += `
       <div class="binary-row">
-        <span class="data-label">Data ${i + 1} (${d})</span>
+        <span class="data-label">&gt; Data ${i + 1} [${d}]</span>
         <span class="data-bits">${toBinary8(d)}</span>
       </div>`;
   });
@@ -587,7 +776,7 @@ function resetGame() {
   skor = 0;
   nyawa = 3;
 
-  document.getElementById("level").innerText = "1";
+  document.getElementById("level").innerText = "LVL_1";
   document.getElementById("skor").innerText = "0";
   document.getElementById("hasil").className = "feedback";
   updateStreakUI();
@@ -598,7 +787,7 @@ function resetGame() {
 function cekJawaban() {
   let input = document.getElementById("jawaban").value;
   if (input.length !== 8) {
-    showFeedback("⚠️ Masukkan tepat 8 bit (0 atau 1)!", "error");
+    showFeedback("[!] ERROR: Payload harus tepat 8-bit (0 atau 1).", "error");
     return;
   }
 
@@ -609,15 +798,15 @@ function cekJawaban() {
     streak++;
 
     document.getElementById("skor").innerText = skor;
-    showFeedback("✅ Tepat sekali! Checksum benar.", "success");
+    showFeedback("[✓] ACCESS GRANTED // Checksum terverifikasi!", "success");
 
     if (streak === 5) {
       if (level < 3) {
         level++;
-        showFeedback(`🎉 Luar biasa! Naik ke Level ${level}!`, "success");
+        showFeedback(`[⚡] FIREWALL BREACHED! Naik ke Security Level ${level}!`, "success");
       }
       streak = 0;
-      document.getElementById("level").innerText = level;
+      document.getElementById("level").innerText = `LVL_${level}`;
     }
 
     updateStreakUI();
@@ -629,17 +818,16 @@ function cekJawaban() {
     updateLives();
 
     if (nyawa === 0) {
-      showFeedback(`💀 Game Over! Jawaban yang benar: ${benar}`, "error");
+      showFeedback(`[☠] SYSTEM LOCKDOWN! Kunci yang benar: ${benar}`, "error");
       kirimSkor();
-      setTimeout(resetGame, 2200);
+      setTimeout(resetGame, 2400);
     } else {
-      showFeedback(`❌ Salah! Jawaban yang benar adalah ${benar}`, "error");
+      showFeedback(`[✕] ACCESS DENIED! 1 Key hancur. Kunci valid: ${benar}`, "error");
       soalBaru();
     }
   }
 }
 
-// Mendukung tombol Enter pada input jawaban
 document.getElementById("jawaban").addEventListener("keypress", function(e) {
   if (e.key === "Enter") {
     cekJawaban();
@@ -653,7 +841,7 @@ function loadLeaderboard() {
     .then(data => {
       tbody.innerHTML = "";
       if (!data || data.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#64748b;">Belum ada skor tercatat.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#4d7c5f;">No breach records found.</td></tr>`;
         return;
       }
 
@@ -669,13 +857,13 @@ function loadLeaderboard() {
           <tr class="${rowClass}">
             <td>${medal}</td>
             <td>${item.nama}</td>
-            <td><span class="badge-lvl">Lv ${item.level}</span></td>
+            <td><span class="badge-lvl">LVL_${item.level}</span></td>
             <td><strong>${item.skor}</strong></td>
           </tr>`;
       });
     })
     .catch(() => {
-      tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#ef4444;">Gagal memuat leaderboard.</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#ff2a55;">[!] Connection failed.</td></tr>`;
     });
 }
 
